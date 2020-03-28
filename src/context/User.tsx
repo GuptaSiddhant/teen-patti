@@ -13,6 +13,6 @@ export const UserProvider: React.FC = ({ children }) => {
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };
 
-export const useUser = () => useContext(UserContext);
+export const useAuthUser = () => useContext(UserContext);
 
-export default useUser;
+export default useAuthUser;

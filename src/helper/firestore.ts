@@ -1,6 +1,7 @@
 import React from "react";
 import * as firebase from "firebase/app";
 import { firestore } from "../firebase";
+import { User } from "./typesDefs";
 
 export const generateUserDocument = async (
   user: firebase.User,
@@ -25,13 +26,6 @@ export const generateUserDocument = async (
   return getUserDocument(user.uid);
 };
 
-interface User {
-  id: string;
-  displayName: string;
-  email: string;
-  photoURL: string;
-}
-
 export const useGetAllUserDocuments = () => {
   const [users, setUsers] = React.useState<User[]>([]);
   React.useEffect(() => {
@@ -41,7 +35,7 @@ export const useGetAllUserDocuments = () => {
         const allUsers: User[] = [];
         querySnapshot.forEach(doc => {
           const user = doc.data() as User;
-          user.id = doc.id;
+          user.uid = doc.id;
           allUsers.push(user);
         });
         setUsers(allUsers);

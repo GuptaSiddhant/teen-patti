@@ -1,13 +1,29 @@
-body {
+@font-face {
+  font-family: "DIN";
+  font-weight: 700;
+  src: local("D-DINCondensed-Bold"),
+    url(./assets/fonts/D-DINCondensed-Bold.otf) format("opentype");
+}
+
+body, html {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: "DIN", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(to bottom right, #cccccc, #f2f2f7);
+  /* font-size: 16px; */
+  font-size: min(2.4vw, 4.2vh); 
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+* {
+  box-sizing: border-box;
 }

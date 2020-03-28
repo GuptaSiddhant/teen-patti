@@ -1,8 +1,7 @@
 import React from "react";
-import { RouteComponentProps } from "@reach/router";
 import { signInWithGoogle } from "../firebase";
 
-const SignIn = (props: RouteComponentProps) => {
+const SignIn = () => {
   return (
     <div className="mt-8">
       <h1 className="text-3xl mb-2 text-center font-bold">Sign In</h1>

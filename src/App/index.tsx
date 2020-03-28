@@ -2,36 +2,24 @@ import React from "react";
 import { Router } from "@reach/router";
 import "./App.css";
 
-import SignIn from "../components/SignIn";
-import Profile from "../components/Profile";
+import SignIn from "../pages/SignIn";
+import TablePage from "../pages/TablePage";
+import ProfilePage from "../pages/ProfilePage";
 
-import useUser from "../context/User";
-
-// const SignIn = (props: RouteComponentProps) => {
-//   const uiConfig = {
-//     // Popup sign in flow rather than redirect flow.
-//     signInFlow: "popup",
-//     // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-//     signInSuccessUrl: "/home",
-//     // We will display Google and Facebook as auth providers.
-//     signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID]
-//   };
-//   return (
-//     <div>
-//       <h1>G9 Teen Patti</h1>
-//       <p>Please sign-in:</p>
-//       <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
-//     </div>
-//   );
-// };
+import useAuthUser from "../context/User";
+import { generateUserDocument } from "../helper/firestore";
 
 function App() {
-  const user = useUser();
-  return user ? (
-    <Profile />
-  ) : (
+  const authUser = useAuthUser();
+  // if (!authUser) {
+  //   return <div>Loading...</div>;
+  // }
+  if (!authUser) return <SignIn />;
+  else generateUserDocument(authUser);
+  return (
     <Router>
-      <SignIn path="/" />
+      <TablePage path="/" />
+      <ProfilePage path="profile" />
     </Router>
   );
 }

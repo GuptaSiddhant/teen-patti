@@ -3,6 +3,7 @@
         "Signup",
         "combinatorics",
         "firebaseui",
-        "firestore"
+        "firestore",
+        "opentype"
     ]
 }
