@@ -13,7 +13,7 @@ const tableHeight = `12rem`;
 
 const StyledTable = styled.div`
   position: fixed;
-  top: calc((90vh - ${tableHeight}) / 2);
+  top: calc((85vh - ${tableHeight}) / 2);
   left: calc((100vw - ${tableWidth}) / 2);
   z-index: 0;
 

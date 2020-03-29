@@ -15,6 +15,7 @@ export interface User extends Partial<firebase.User> {
 
 export interface Player extends User {
   status?: "default" | "dealer";
+  cards?: string[];
 }
 
 export type Color = "s" | "h" | "c" | "d" | string;

@@ -4,6 +4,7 @@ import { Player } from "../helper/typesDefs";
 import { getDimInREM } from "../helper/utilities";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
 import { Card } from "./Card";
+import { SeeCardsButton } from "./Button";
 
 const playerComponentWidth = getDimInREM(80);
 
@@ -78,11 +79,18 @@ const StyledPlayerOpponent = styled.div<Player>`
   }
 
   .cards {
+    position: relative;
     display: flex;
     margin-left: -2rem;
     margin-right: -2rem;
     margin-top: -0.25rem;
     justify-content: space-evenly;
+
+    .seeButton {
+      position: absolute;
+      top: 0.6rem;
+
+    }
   }
 `;
 
@@ -161,6 +169,7 @@ export const Dealer = () => {
 };
 
 export const MainPlayer = (player: Player) => {
+  const [isSeen, setSeen] = React.useState(false);
   const positionStyle: React.CSSProperties = {
     position: "absolute",
     top: getDimInREM(150),
@@ -171,9 +180,20 @@ export const MainPlayer = (player: Player) => {
     <div style={positionStyle}>
       <StyledPlayerOpponent {...player} photoURL="">
         <div className="cards">
-          <Card number={"A"} color={"s"} />          
-          <Card number={"K"} color={"c"} />
-          <Card number={"5"} color={"d"} />
+          {player.cards?.map(card => (
+            <Card
+              key={card}
+              number={card[0]}
+              color={card[1]}
+              isHidden={!isSeen}
+            />
+          ))}
+
+          {!isSeen && (
+            <div className="seeButton">
+              <SeeCardsButton onClick={() => setSeen(prev => !prev)} />
+            </div>
+          )}
         </div>
         <div className="playerStatus">
           <GuptasiIcon /> {totalWallet}

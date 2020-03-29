@@ -28,6 +28,7 @@ export const Game = () => {
   const authUser = useAuthUser();
   if (authUser) {
     const player: Player = getUserFromFirebaseUser(authUser);
+    player.cards = ["As", "Kc", "5d"];
     const opponents: Player[] = Array(8).fill(
       getUserFromFirebaseUser(authUser)
     );

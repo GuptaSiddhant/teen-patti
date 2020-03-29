@@ -10,22 +10,23 @@ const StyledPage = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: 12rem;
-  width: 12rem;
+  height: 360px;
+  width: 360px;
   background: #fff;
   text-align: center;
-  padding: 1rem;
-  border-radius: 0.5rem;
+  padding: 20px;
+  border-radius: 10px;
   box-shadow: 1rem 1rem 2rem 0 #00000018, -1rem -1rem 2rem 0 #f2f2f2;
   color: #CCA700;
+  font-size: 48px;
 
   .logo {
-    height: 4rem;
-    margin-top: 1rem;
+    height: 120px;
+    margin-top: 40px;
   }
   .google {
-    margin-top: 1rem;
-    height: 2rem;
+    margin-top: 20px;
+    height: 60px;
     cursor: pointer;
   }
 `;

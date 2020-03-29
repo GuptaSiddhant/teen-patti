@@ -69,7 +69,8 @@ const PlayButton = () => {
   };
   return (
     <StyledGameButton style={style}>
-      CHAAL <GuptasiIcon />200
+      CHAAL <GuptasiIcon />
+      200
     </StyledGameButton>
   );
 };
@@ -83,7 +84,8 @@ const RaiseButton = () => {
   const style: React.CSSProperties = { color: "#000080" };
   return (
     <StyledGameButton style={style}>
-      RAISE <GuptasiIcon />400
+      RAISE <GuptasiIcon />
+      400
     </StyledGameButton>
   );
 };
@@ -102,9 +104,22 @@ const SideShowButton = () => {
   return <StyledGameButton style={style}>SIDE SHOW</StyledGameButton>;
 };
 
+export const SeeCardsButton = ({
+  onClick
+}: {
+  onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+}) => {
+  const style: React.CSSProperties = { color: "#000" };
+  return (
+    <StyledGameButton style={style} onClick={onClick}>
+      SEE CARDS
+    </StyledGameButton>
+  );
+};
+
 const StyledGameButtonGroup = styled.div`
   position: fixed;
-  bottom: 1rem;
+  bottom: 1.5rem;
   left: 1rem;
   right: 1rem;
   justify-content: center;
