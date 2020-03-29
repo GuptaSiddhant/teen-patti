@@ -1,15 +1,24 @@
 import * as React from "react";
 import styled from "@emotion/styled";
 import { Player } from "../helper/typesDefs";
+import { getDimInREM } from "../helper/utilities";
+import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
 
-// const calcDim = (n: number = 1) => `calc(${baseUnit} * ${n})`;
+const playerComponentWidth = getDimInREM(80);
+
+const getPlayerStatusBgColor = (status: Player["status"] = "default") => {
+  switch (status) {
+    case "dealer":
+      return "#B3248F";
+    default:
+      return "#CCA700";
+  }
+};
 
 const StyledPlayerOpponent = styled.div<Player>`
   position: relative;
-  
-  margin: 0.5rem;
-  width: 5rem;
-  height: 5rem;
+  width: ${playerComponentWidth};
+  height: ${playerComponentWidth};
 
   background: url('${props => props.photoURL}');
   background-color: #fff;
@@ -20,8 +29,9 @@ const StyledPlayerOpponent = styled.div<Player>`
 
   border-radius: 2.5rem;
   border: 0.125rem solid #ffffff;
-  box-shadow: 0.5rem 0.5rem 1rem 0 #00000020,
-    -0.5rem -0.5rem 1rem 0 #ffff;
+  box-shadow: 0 0 1rem 0 #00000020;    
+
+  cursor: pointer;
 
   .playerName {
     position: absolute;
@@ -29,7 +39,7 @@ const StyledPlayerOpponent = styled.div<Player>`
     left: -0.125rem;
     right: -0.125rem;
     height: 1rem;
-    padding-top: 0.0625rem;
+    padding-top: 0.1rem;
     background: #fff;
     border-radius: 0.125rem;
     box-shadow: 0 0.25rem 0.5rem 0 #0004;
@@ -46,8 +56,10 @@ const StyledPlayerOpponent = styled.div<Player>`
     left: 0;
     right: 0;
     height: 1rem;
-    padding-top: 0.125rem;
-    background: #CCA700;
+    padding-top: 0.2rem;
+
+    background: ${props => getPlayerStatusBgColor(props.status)};
+    
     border-radius: 0 0 0.25rem 0.25rem;
     box-shadow: 0 0.25rem 0.5rem 0 #0004;
     /* clip-path: polygon(0 0, 10% 100%, 90% 100%, 100% 0); */
@@ -56,17 +68,83 @@ const StyledPlayerOpponent = styled.div<Player>`
     font-weight: bold;
     font-size: 0.75rem;
     color: #fff;
-    align-items: center;
+    text-align: center;
+
+    svg {
+      height: 0.5rem;
+      width: 0.5rem;
+    }
   }
 `;
 
-export const PlayerOpponent = (player: Player) => {
+const getTopLeftPosition = (pos: number) => {
+  // Pixel distance from inner border;
+  switch (pos + 1) {
+    case 1:
+      return [getDimInREM(150), getDimInREM(60)];
+    case 2:
+      return [getDimInREM(90), getDimInREM(-48)];
+    case 3:
+      return [getDimInREM(-18), getDimInREM(-48)];
+    case 4:
+      return [getDimInREM(-60), getDimInREM(80)];
+    case 5:
+      return [getDimInREM(-60), getDimInREM(320)];
+    case 6:
+      return [getDimInREM(-18), getDimInREM(450)];
+    case 7:
+      return [getDimInREM(90), getDimInREM(450)];
+    case 8:
+      return [getDimInREM(150), getDimInREM(340)];
+    default:
+      return [getDimInREM(80), getDimInREM(80)];
+  }
+};
+
+export const PlayerOpponent = ({
+  player,
+  position
+}: {
+  player: Player;
+  position: number;
+}) => {
+  const positionStyle: React.CSSProperties = {
+    position: "absolute",
+    top: getTopLeftPosition(position)[0],
+    left: getTopLeftPosition(position)[1]
+  };
+
+  const totalWallet = player.wallet.bought + player.wallet.earned;
+
   return (
-    <StyledPlayerOpponent {...player}>
-      <div className="playerStatus">G.23030</div>
-      <div className="playerName">
-        <span>{player.displayName.split(" ")[0]}</span>
-      </div>
-    </StyledPlayerOpponent>
+    <div style={positionStyle}>
+      <StyledPlayerOpponent {...player}>
+        <div className="playerStatus"><GuptasiIcon /> {totalWallet}</div>
+        <div className="playerName">{player.displayName.split(" ")[0]}</div>
+      </StyledPlayerOpponent>
+    </div>
+  );
+};
+
+export const Dealer = () => {
+  const dealer: Player = {
+    displayName: "Dealer",
+    photoURL:
+      "https://firebasestorage.googleapis.com/v0/b/g9teenpatti.appspot.com/o/images%2Fdealer.jpg?alt=media&token=241024d4-915c-4070-87cd-62bda116b48c",
+    status: "dealer"
+  } as Player;
+
+  const positionStyle: React.CSSProperties = {
+    position: "absolute",
+    top: getDimInREM(-60),
+    left: getDimInREM(200)
+  };
+  return (
+    <div style={positionStyle}>
+      <StyledPlayerOpponent {...dealer}>
+        <div className="playerStatus">Tip the dealer</div>
+        <div className="playerName">{dealer.displayName.split(" ")[0]}</div>
+      </StyledPlayerOpponent>
+    </div>
   );
 };

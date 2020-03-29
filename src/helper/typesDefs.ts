@@ -13,4 +13,6 @@ export interface User extends Partial<firebase.User> {
   };
 }
 
-export interface Player extends User {}
+export interface Player extends User {
+  status?: "default" | "dealer";
+}
