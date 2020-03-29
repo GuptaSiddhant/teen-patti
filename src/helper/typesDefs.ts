@@ -16,3 +16,12 @@ export interface User extends Partial<firebase.User> {
 export interface Player extends User {
   status?: "default" | "dealer";
 }
+
+export type Color = "s" | "h" | "c" | "d" | string;
+export type Size = "sm" | "md" | "lg";
+export interface CardType {
+  number: string;
+  color: Color;
+  size?: Size;
+  hidden?: boolean;
+}

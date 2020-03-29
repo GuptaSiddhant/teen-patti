@@ -6,6 +6,7 @@ import { ReactComponent as ClockWise } from "../assets/icons/clockwise.svg";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
 
 import { PlayerOpponent, Dealer } from "./PlayerOpponent";
+import { Card } from "./Card";
 
 const tableWidth = `31.25rem`;
 const tableHeight = `12rem`;
@@ -86,15 +87,24 @@ const StyledTable = styled.div`
         height: inherit;
         color: #191980;
         text-align: left;
-        padding-top: 0.5rem;
 
         &.none {
+          padding-top: 0.5rem;
           opacity: 0.5;
         }
       }
 
       .gameValue {
         font-size: 1.5rem;
+      }
+
+      .cards {
+        text-align: center;
+        padding-top: 0.25rem;
+        display: grid;
+        grid-template-columns: repeat(3, max-content);
+        grid-gap: 0.5rem;
+        font-size: 1rem;
       }
     }
   }
@@ -109,8 +119,9 @@ export const Table = ({
   opponents: Player[];
   mode: string;
   pot: number;
-  jokers: string[];
+  jokers: string[]; // Jc
 }) => {
+  const jokerCount = jokers.length;
   return (
     <StyledTable>
       <div className="tableDealerArea" />
@@ -129,10 +140,19 @@ export const Table = ({
             <br />
             POT
           </div>
-          <div className={"gameJoker " + (jokers.length === 0 ? "none" : "")}>
-            <span className="gameValue">
-              NO
-            </span><br/>
+          <div className={"gameJoker " + (jokerCount === 0 ? "none" : "")}>
+            <div className={"gameValue " + (jokerCount !== 0 ? "cards" : "")}>
+              {jokerCount === 0
+                ? "NO"
+                : jokers.map(joker => (
+                    <Card
+                      key={joker}
+                      number={joker[0]}
+                      size="sm"
+                      color={joker[1]}
+                    />
+                  ))}
+            </div>
             JOKER
           </div>
         </div>
