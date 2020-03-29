@@ -1,6 +1,9 @@
 import * as React from "react";
 import styled from "@emotion/styled";
 import { Player } from "../helper/typesDefs";
+import { getDimInREM } from "../helper/utilities";
+import { ReactComponent as ClockWise } from "../assets/icons/clockwise.svg";
+import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
 
 import { PlayerOpponent, Dealer } from "./PlayerOpponent";
 
@@ -31,20 +34,111 @@ const StyledTable = styled.div`
   }
 
   .tableCenter {
+    position: relative;
     margin: 2rem;
+    padding: 0.75rem;
     background-color: #fff;
     border-radius: 5rem;
     width: calc(${tableWidth} - 5rem);
     height: calc(${tableHeight} - 5rem);
     box-shadow: 0.5rem 0.5rem 1rem 0 #00000018, -0.5rem -0.5rem 1rem 0 #f2f2f240;
+    text-align: center;
+    color: #808080;
+
+    svg.clockwise {
+      position: absolute;
+      color: #d8d8d8;
+      &.left {
+        top: 0.5rem;
+        left: 0.6rem;
+      }
+      &.right {
+        right: 0.6rem;
+        top: 0.65rem;
+        transform: rotate(180deg);
+      }
+    }
+
+    .tableContent {
+      margin-top: 0.5rem;
+      height: ${getDimInREM(60)};
+      display: grid;
+      grid-template-columns: 1fr max-content 1fr;
+      grid-gap: 1rem;
+
+      .gameMode {
+        height: inherit;
+        color: #880000;
+        text-align: right;
+        padding-top: 0.5rem;
+      }
+      .gamePot {
+        height: inherit;
+        width: ${getDimInREM(100)};
+        color: #fff;
+        background: #cca700;
+        box-shadow: inset 0.5rem 0.5rem 1rem 0 #00000020,
+          inset -0.5rem -0.5rem 1rem 0 #f2f2f240;
+        border-radius: 0.5rem;
+        padding-top: 0.5rem;
+      }
+      .gameJoker {
+        height: inherit;
+        color: #191980;
+        text-align: left;
+        padding-top: 0.5rem;
+
+        &.none {
+          opacity: 0.5;
+        }
+      }
+
+      .gameValue {
+        font-size: 1.5rem;
+      }
+    }
   }
 `;
 
-export const Table = ({ opponents }: { opponents: Player[] }) => {
+export const Table = ({
+  opponents,
+  mode,
+  pot,
+  jokers
+}: {
+  opponents: Player[];
+  mode: string;
+  pot: number;
+  jokers: string[];
+}) => {
   return (
     <StyledTable>
       <div className="tableDealerArea" />
-      <div className="tableCenter"></div>
+      <div className="tableCenter">
+        <div className="message">Siddhant tipped the dealer G.500</div>
+        <div className="tableContent">
+          <div className="gameMode">
+            <span className="gameValue">{mode.toUpperCase()}</span>
+            <br />
+            MODE
+          </div>
+          <div className="gamePot">
+            <span className="gameValue">
+              <GuptasiIcon /> {pot.toString()}
+            </span>
+            <br />
+            POT
+          </div>
+          <div className={"gameJoker " + (jokers.length === 0 ? "none" : "")}>
+            <span className="gameValue">
+              NO
+            </span><br/>
+            JOKER
+          </div>
+        </div>
+        <ClockWise className="clockwise left" />
+        <ClockWise className="clockwise right" />
+      </div>
       <Dealer />
       {opponents.map((opponent, index) => (
         <PlayerOpponent

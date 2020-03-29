@@ -26,10 +26,16 @@ code {
     monospace;
 }
 
+#root {
+  overflow: hidden;
+}
+
 * {
   box-sizing: border-box;
   user-select: none;   
   fill: currentColor;
+  touch-action: none;  
+  user-zoom: fixed;
 }
 
 input[type="text"],

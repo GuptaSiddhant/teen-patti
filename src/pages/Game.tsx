@@ -33,7 +33,7 @@ export const Game = () => {
       <StyledGame>
         <IconButton type="info" />
         <IconButton type="profile" />
-        <Table opponents={opponents} />
+        <Table opponents={opponents} pot={4000} mode="normal" jokers={[]} />
         <GameButtonGroup />
       </StyledGame>
     );
