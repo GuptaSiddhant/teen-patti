@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { Player } from "../helper/typesDefs";
 import { getDimInREM } from "../helper/utilities";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
+import { Card } from "./Card";
 
 const playerComponentWidth = getDimInREM(80);
 
@@ -56,7 +57,7 @@ const StyledPlayerOpponent = styled.div<Player>`
     left: 0;
     right: 0;
     height: 1rem;
-    padding-top: 0.2rem;
+    padding-top: 0.15rem;
 
     background: ${props => getPlayerStatusBgColor(props.status)};
     
@@ -74,6 +75,14 @@ const StyledPlayerOpponent = styled.div<Player>`
       height: 0.5rem;
       width: 0.5rem;
     }
+  }
+
+  .cards {
+    display: flex;
+    margin-left: -2rem;
+    margin-right: -2rem;
+    margin-top: -0.25rem;
+    justify-content: space-evenly;
   }
 `;
 
@@ -101,7 +110,7 @@ const getTopLeftPosition = (pos: number) => {
   }
 };
 
-export const PlayerOpponent = ({
+export const Opponent = ({
   player,
   position
 }: {
@@ -119,7 +128,9 @@ export const PlayerOpponent = ({
   return (
     <div style={positionStyle}>
       <StyledPlayerOpponent {...player}>
-        <div className="playerStatus"><GuptasiIcon /> {totalWallet}</div>
+        <div className="playerStatus">
+          <GuptasiIcon /> {totalWallet}
+        </div>
         <div className="playerName">{player.displayName.split(" ")[0]}</div>
       </StyledPlayerOpponent>
     </div>
@@ -144,6 +155,30 @@ export const Dealer = () => {
       <StyledPlayerOpponent {...dealer}>
         <div className="playerStatus">Tip the dealer</div>
         <div className="playerName">{dealer.displayName.split(" ")[0]}</div>
+      </StyledPlayerOpponent>
+    </div>
+  );
+};
+
+export const MainPlayer = (player: Player) => {
+  const positionStyle: React.CSSProperties = {
+    position: "absolute",
+    top: getDimInREM(150),
+    left: getDimInREM(200)
+  };
+  const totalWallet = player.wallet.bought + player.wallet.earned;
+  return (
+    <div style={positionStyle}>
+      <StyledPlayerOpponent {...player} photoURL="">
+        <div className="cards">
+          <Card number={"A"} color={"s"} />          
+          <Card number={"K"} color={"c"} />
+          <Card number={"5"} color={"d"} />
+        </div>
+        <div className="playerStatus">
+          <GuptasiIcon /> {totalWallet}
+        </div>
+        <div className="playerName">YOU</div>
       </StyledPlayerOpponent>
     </div>
   );

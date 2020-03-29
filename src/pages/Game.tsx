@@ -28,12 +28,20 @@ export const Game = () => {
   const authUser = useAuthUser();
   if (authUser) {
     const player: Player = getUserFromFirebaseUser(authUser);
-    const opponents: Player[] = Array(8).fill(player);
+    const opponents: Player[] = Array(8).fill(
+      getUserFromFirebaseUser(authUser)
+    );
     return (
       <StyledGame>
         <IconButton type="info" />
         <IconButton type="profile" />
-        <Table opponents={opponents} pot={4000} mode="normal" jokers={['AC' ]} />
+        <Table
+          player={player}
+          opponents={opponents}
+          pot={4000}
+          mode="Jokers"
+          jokers={["9S", "5H"]}
+        />
         <GameButtonGroup />
       </StyledGame>
     );

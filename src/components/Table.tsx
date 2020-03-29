@@ -5,7 +5,7 @@ import { getDimInREM } from "../helper/utilities";
 import { ReactComponent as ClockWise } from "../assets/icons/clockwise.svg";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
 
-import { PlayerOpponent, Dealer } from "./PlayerOpponent";
+import { Opponent, Dealer, MainPlayer } from "./Player";
 import { Card } from "./Card";
 
 const tableWidth = `31.25rem`;
@@ -114,14 +114,17 @@ export const Table = ({
   opponents,
   mode,
   pot,
-  jokers
+  jokers,
+  player
 }: {
+  player: Player;
   opponents: Player[];
   mode: string;
   pot: number;
   jokers: string[]; // Jc
 }) => {
   const jokerCount = jokers.length;
+  if (jokerCount > 2) jokers = jokers.slice(0, 2);
   return (
     <StyledTable>
       <div className="tableDealerArea" />
@@ -145,23 +148,19 @@ export const Table = ({
               {jokerCount === 0
                 ? "NO"
                 : jokers.map(joker => (
-                    <Card
-                      key={joker}
-                      number={joker[0]}
-                      size="sm"
-                      color={joker[1]}
-                    />
+                    <Card key={joker} number={joker[0]} color={joker[1]} />
                   ))}
             </div>
-            JOKER
+            {jokerCount === 0 ? "JOKER" : ""}
           </div>
         </div>
         <ClockWise className="clockwise left" />
         <ClockWise className="clockwise right" />
       </div>
       <Dealer />
+      <MainPlayer {...player} />
       {opponents.map((opponent, index) => (
-        <PlayerOpponent
+        <Opponent
           key={opponent.uid + index}
           position={index}
           player={opponent}

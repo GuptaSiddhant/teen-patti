@@ -18,10 +18,8 @@ export interface Player extends User {
 }
 
 export type Color = "s" | "h" | "c" | "d" | string;
-export type Size = "sm" | "md" | "lg";
 export interface CardType {
   number: string;
-  color: Color;
-  size?: Size;
-  hidden?: boolean;
+  color: Color;  
+  isHidden?: boolean;
 }
