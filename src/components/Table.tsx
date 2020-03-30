@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "@emotion/styled";
-import { Player } from "../helper/typesDefs";
+import { IPlayer } from "../helper/typesDefs";
 import { getDimInREM } from "../helper/utilities";
 import { ReactComponent as ClockWise } from "../assets/icons/clockwise.svg";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
@@ -124,8 +124,8 @@ export const Table = ({
   jokers,
   player
 }: {
-  player: Player;
-  opponents: Player[];
+  player: IPlayer;
+  opponents: IPlayer[];
   mode: string;
   pot: number;
   jokers: string[]; // Jc

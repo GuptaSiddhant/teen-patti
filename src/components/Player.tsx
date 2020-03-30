@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "@emotion/styled";
-import { Player } from "../helper/typesDefs";
+import { IPlayer } from "../helper/typesDefs";
 import { getDimInREM } from "../helper/utilities";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
 import { Card } from "./Card";
@@ -8,7 +8,7 @@ import { SeeCardsButton } from "./Button";
 
 const playerComponentWidth = getDimInREM(80);
 
-const getPlayerStatusBgColor = (status: Player["status"] = "default") => {
+const getPlayerStatusBgColor = (status: IPlayer["status"] = "default") => {
   switch (status) {
     case "dealer":
       return "#B3248F";
@@ -17,7 +17,7 @@ const getPlayerStatusBgColor = (status: Player["status"] = "default") => {
   }
 };
 
-const StyledPlayerOpponent = styled.div<Player>`
+const StyledPlayerOpponent = styled.div<IPlayer>`
   position: relative;
   width: ${playerComponentWidth};
   height: ${playerComponentWidth};
@@ -122,7 +122,7 @@ export const Opponent = ({
   player,
   position
 }: {
-  player: Player;
+  player: IPlayer;
   position: number;
 }) => {
   const positionStyle: React.CSSProperties = {
@@ -146,12 +146,12 @@ export const Opponent = ({
 };
 
 export const Dealer = () => {
-  const dealer: Player = {
+  const dealer: IPlayer = {
     displayName: "Dealer",
     photoURL:
       "https://firebasestorage.googleapis.com/v0/b/g9teenpatti.appspot.com/o/images%2Fdealer.jpg?alt=media&token=241024d4-915c-4070-87cd-62bda116b48c",
     status: "dealer"
-  } as Player;
+  } as IPlayer;
 
   const positionStyle: React.CSSProperties = {
     position: "absolute",
@@ -168,7 +168,7 @@ export const Dealer = () => {
   );
 };
 
-export const MainPlayer = (player: Player) => {
+export const MainPlayer = (player: IPlayer) => {
   const [isSeen, setSeen] = React.useState(false);
   const positionStyle: React.CSSProperties = {
     position: "absolute",

@@ -7,9 +7,9 @@ import { ReactComponent as Heart } from "../assets/icons/heart.svg";
 import { ReactComponent as Diamond } from "../assets/icons/diamond.svg";
 
 import { getDimInREM } from "../helper/utilities";
-import { CardType } from "../helper/typesDefs";
+import { ICard } from "../helper/typesDefs";
 
-const StyledCard = styled.div<CardType>`
+const StyledCard = styled.div<ICard>`
   width: ${getDimInREM(35)};
   height: ${getDimInREM(50)};
   background: ${props => (props.isHidden ? `url(${cardBack})` : "#fff")};
@@ -33,7 +33,7 @@ const StyledCard = styled.div<CardType>`
   }
 `;
 
-export const Card = (props: CardType) => {
+export const Card = (props: ICard) => {
   const { number, color, isHidden = false } = props;
 
   let ColorIcon = Spade;

@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "@emotion/styled";
 
 import useAuthUser from "../context/User";
-import { Player } from "../helper/typesDefs";
+import { IPlayer } from "../helper/typesDefs";
 import { getUserDocument } from "../helper/firestore";
 
 import { Table } from "../components/Table";
@@ -10,7 +10,7 @@ import { IconButton, GameButtonGroup } from "../components/Button";
 
 const useAuthPlayer = () => {
   const authUser = useAuthUser();
-  const [player, setPlayer] = React.useState<Player | undefined>(undefined);
+  const [player, setPlayer] = React.useState<IPlayer | undefined>(undefined);
   if (authUser) {
     const uid = authUser.uid;
     getUserDocument(uid).then(user =>
@@ -40,7 +40,7 @@ export const Game = () => {
   const player = useAuthPlayer();
   if (player) {
     player.cards = ["As", "Kc", "5d"];
-    const opponents: Player[] = Array(8).fill(player);
+    const opponents: IPlayer[] = Array(8).fill(player);
     return (
       <StyledGame>
         <IconButton type="info" />
