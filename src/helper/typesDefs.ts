@@ -11,6 +11,7 @@ export interface User {
     bought: number;
     earned: number;
   };
+  position: number;
 }
 
 export interface IPlayer extends User {
@@ -60,6 +61,7 @@ export interface IGame {
   isActive: boolean;
   pot: number;
   mode: GameMode;
+  jokers: string[];
   message: string;
   startsWith: IPlayer;
   players: IPlayer[];

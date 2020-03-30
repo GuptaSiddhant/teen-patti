@@ -1,48 +1,45 @@
 import * as React from "react";
-import styled from "@emotion/styled";
 
-import useAuthUser from "../context/User";
-import { IPlayer } from "../helper/typesDefs";
-import { getUserDocument } from "../helper/firestore";
+// import { IPlayer } from "../helper/typesDefs";
+import { useAuthPlayer, useGetOnlineUsers } from "../helper/firestore";
 
 import { Table } from "../components/Table";
 import { IconButton, GameButtonGroup } from "../components/Button";
+import { IPlayer, User } from "../helper/typesDefs";
 
-const useAuthPlayer = () => {
-  const authUser = useAuthUser();
-  const [player, setPlayer] = React.useState<IPlayer | undefined>(undefined);
-  if (authUser) {
-    const uid = authUser.uid;
-    getUserDocument(uid).then(user =>
-      setPlayer({
-        uid: uid,
-        isAdmin: false,
-        displayName: user?.displayName || "",
-        email: user?.email || "",
-        photoURL: user?.photoURL || "",
-        gamesPlayed: 0,
-        wallet: {
-          bought: 0,
-          earned: 0
-        }
-      })
-    );
-  }
-
-  return player;
+const useOpponents = (
+  allUsers: User[],
+  player: IPlayer | undefined
+): IPlayer[] => {  
+  const [allPlayers, setAllPlayers] = React.useState<IPlayer[]>([]);
+  React.useEffect(() => {
+    if (player) {
+      const playerPosition = player.position;
+      setAllPlayers(
+        allUsers
+          .filter(user => user.uid !== player.uid)
+          .map(user => ({
+            ...user,
+            position:
+              user.position > playerPosition
+                ? user.position - playerPosition
+                : user.position - playerPosition + 9
+          }))
+      );
+    } else setAllPlayers(allUsers);
+  }, [allUsers, player]);
+  return allPlayers;
 };
-
-const StyledGame = styled.div`
-  position: relative;
-`;
 
 export const Game = () => {
   const player = useAuthPlayer();
+  const allUsers = useGetOnlineUsers();
+  const opponents = useOpponents(allUsers, player);
+  console.count('render game')
   if (player) {
     player.cards = ["As", "Kc", "5d"];
-    const opponents: IPlayer[] = Array(8).fill(player);
     return (
-      <StyledGame>
+      <div style={{ position: "relative" }}>
         <IconButton type="info" />
         <IconButton type="profile" />
         <Table
@@ -53,7 +50,7 @@ export const Game = () => {
           jokers={["9S", "5H"]}
         />
         <GameButtonGroup />
-      </StyledGame>
+      </div>
     );
   } else return null;
 };

@@ -2,6 +2,7 @@ import * as React from "react";
 import styled from "@emotion/styled";
 import { auth } from "../firebase";
 import { getDimInREM } from "../helper/utilities";
+import { setUserOnlineStatusFalse } from "../helper/firestore";
 import UserIcon from "../assets/icons/user.svg";
 import InfoIcon from "../assets/icons/info.svg";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
@@ -40,7 +41,10 @@ export const IconButton = ({ type }: { type: IconButtonType }) => {
 
   switch (type) {
     case "profile":
-      handleClick = () => auth.signOut();
+      handleClick = () => {
+        setUserOnlineStatusFalse(auth.currentUser?.uid || "");
+        auth.signOut();
+      };
       icon = UserIcon;
       tooltip = "Profile";
       style.left = "1rem";
@@ -77,8 +81,7 @@ const PlayButton = () => {
   };
   return (
     <StyledGameButton style={style}>
-      CHAAL <GuptasiIcon />{" "}
-      200
+      CHAAL <GuptasiIcon /> 200
     </StyledGameButton>
   );
 };
@@ -92,8 +95,7 @@ const RaiseButton = () => {
   const style: React.CSSProperties = { color: "#000080" };
   return (
     <StyledGameButton style={style}>
-      RAISE <GuptasiIcon />{" "}
-      400
+      RAISE <GuptasiIcon /> 400
     </StyledGameButton>
   );
 };

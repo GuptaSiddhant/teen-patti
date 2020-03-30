@@ -2,6 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 const firestore = admin.firestore();
+const auth = admin.auth();
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -29,28 +30,29 @@ export const addNewUserToFirestore = functions.auth.user().onCreate(user => {
   });
 });
 
-export const startNewGame = functions.firestore
-  .document("games/{gameId}")
-  .onUpdate(change => {
-    const newValue = change.after.data();
-    const prevValue = change.before.data();
-    if (prevValue && newValue) {
-      if (!newValue.isActive && prevValue.isActive) {
-        const winners = prevValue.winners;
-        firestore
-          .collection("games")
-          .doc()
-          .set({
-            isActive: true,
-            pot: 0,
-            mode: "normal",
-            message: "",
-            players: [],
-            actions: [],
-            winner: [],
-            startsWith: winners[0]
-          });
-      }
-    }
-    return null;
-  });
+// export const startNewGame = functions.firestore
+//   .document("games/{gameId}")
+//   .onUpdate(change => {
+//     const newValue = change.after.data();
+//     const prevValue = change.before.data();
+//     if (prevValue && newValue) {
+//       if (!newValue.isActive && prevValue.isActive) {
+//         const winners = prevValue.winners;
+//         firestore
+//           .collection("games")
+//           .doc()
+//           .set({
+//             isActive: true,
+//             pot: 0,
+//             mode: "normal",
+//             jokers: [],
+//             message: "",
+//             players: [],
+//             actions: [],
+//             winner: [],
+//             startsWith: winners[0]
+//           });
+//       }
+//     }
+//     return null;
+//   });

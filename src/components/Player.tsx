@@ -96,7 +96,7 @@ const StyledPlayerOpponent = styled.div<IPlayer>`
 
 const getTopLeftPosition = (pos: number) => {
   // Pixel distance from inner border;
-  switch (pos + 1) {
+  switch (pos) {
     case 1:
       return [getDimInREM(150), getDimInREM(60)];
     case 2:

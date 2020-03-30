@@ -168,8 +168,8 @@ export const Table = ({
       <MainPlayer {...player} />
       {opponents.map((opponent, index) => (
         <Opponent
-          key={opponent.uid + index}
-          position={index}
+          key={opponent.uid}
+          position={opponent.position || index}
           player={opponent}
         />
       ))}
