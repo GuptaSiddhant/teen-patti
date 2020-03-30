@@ -2,36 +2,45 @@ import * as React from "react";
 import styled from "@emotion/styled";
 
 import useAuthUser from "../context/User";
-import { Player, User } from "../helper/typesDefs";
+import { Player } from "../helper/typesDefs";
+import { getUserDocument } from "../helper/firestore";
 
 import { Table } from "../components/Table";
 import { IconButton, GameButtonGroup } from "../components/Button";
 
-const getUserFromFirebaseUser = (authUser: firebase.User): User => ({
-  uid: authUser.uid,
-  isAdmin: false,
-  displayName: authUser.displayName || "",
-  email: authUser.email || "",
-  photoURL: authUser.photoURL || "",
-  gamesPlayed: 0,
-  wallet: {
-    bought: 0,
-    earned: 0
+const useAuthPlayer = () => {
+  const authUser = useAuthUser();
+  const [player, setPlayer] = React.useState<Player | undefined>(undefined);
+  if (authUser) {
+    const uid = authUser.uid;
+    getUserDocument(uid).then(user =>
+      setPlayer({
+        uid: uid,
+        isAdmin: false,
+        displayName: user?.displayName || "",
+        email: user?.email || "",
+        photoURL: user?.photoURL || "",
+        gamesPlayed: 0,
+        wallet: {
+          bought: 0,
+          earned: 0
+        }
+      })
+    );
   }
-});
+
+  return player;
+};
 
 const StyledGame = styled.div`
   position: relative;
 `;
 
 export const Game = () => {
-  const authUser = useAuthUser();
-  if (authUser) {
-    const player: Player = getUserFromFirebaseUser(authUser);
+  const player = useAuthPlayer();
+  if (player) {
     player.cards = ["As", "Kc", "5d"];
-    const opponents: Player[] = Array(8).fill(
-      getUserFromFirebaseUser(authUser)
-    );
+    const opponents: Player[] = Array(8).fill(player);
     return (
       <StyledGame>
         <IconButton type="info" />

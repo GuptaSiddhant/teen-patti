@@ -49,6 +49,8 @@ const StyledTable = styled.div`
     svg.clockwise {
       position: absolute;
       color: #d8d8d8;
+      width: ${getDimInREM(50)};
+      height: ${getDimInREM(95)};
       &.left {
         top: 0.5rem;
         left: 0.6rem;
@@ -82,6 +84,11 @@ const StyledTable = styled.div`
           inset -0.5rem -0.5rem 1rem 0 #f2f2f240;
         border-radius: 0.5rem;
         padding-top: 0.5rem;
+
+        svg {
+          height: ${getDimInREM(16)};
+          width: ${getDimInREM(16)};
+        }
       }
       .gameJoker {
         height: inherit;
@@ -134,7 +141,7 @@ export const Table = ({
           <div className="gameMode">
             <span className="gameValue">{mode.toUpperCase()}</span>
             <br />
-            MODE
+            GAME
           </div>
           <div className="gamePot">
             <span className="gameValue">

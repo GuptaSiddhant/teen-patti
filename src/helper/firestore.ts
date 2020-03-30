@@ -5,7 +5,7 @@ import { User } from "./typesDefs";
 
 export const generateUserDocument = async (
   user: firebase.User,
-  additionalData: any = {}
+  additionalData: Partial<User> = {}
 ) => {
   if (!user) return;
   const userRef = firestore.doc(`users/${user.uid}`);
@@ -45,13 +45,15 @@ export const useGetAllUserDocuments = () => {
   return users;
 };
 
-export const getUserDocument = async (uid: string) => {
-  if (!uid) return null;
+export const getUserDocument = async (
+  uid: string
+): Promise<User | undefined> => {
   try {
     const userDocument = await firestore.doc(`users/${uid}`).get();
+    const userInfo = userDocument.data() as User;
     return {
       uid,
-      ...userDocument.data()
+      ...userInfo
     };
   } catch (error) {
     console.error("Error fetching user", error);

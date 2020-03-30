@@ -14,12 +14,20 @@ const StyleButton = styled.div`
   background: #fff;
   text-align: center;
   cursor: pointer;
+  svg {
+    height: ${getDimInREM(12)};
+    width: ${getDimInREM(12)};
+  }
 `;
 
 const StyledIconButton = styled(StyleButton)`
   position: fixed;
   width: ${getDimInREM(28)};
   height: ${getDimInREM(28)};
+  img {
+    width: ${getDimInREM(16)};
+    height: ${getDimInREM(16)};
+  }
 `;
 
 type IconButtonType = "profile" | "info";
@@ -69,7 +77,7 @@ const PlayButton = () => {
   };
   return (
     <StyledGameButton style={style}>
-      CHAAL <GuptasiIcon />
+      CHAAL <GuptasiIcon />{" "}
       200
     </StyledGameButton>
   );
@@ -84,7 +92,7 @@ const RaiseButton = () => {
   const style: React.CSSProperties = { color: "#000080" };
   return (
     <StyledGameButton style={style}>
-      RAISE <GuptasiIcon />
+      RAISE <GuptasiIcon />{" "}
       400
     </StyledGameButton>
   );
