@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "@emotion/styled";
-import { IPlayer } from "../helper/typesDefs";
+import { IPlayer, IGame } from "../helper/typesDefs";
 import { getDimInREM } from "../helper/utilities";
 import { ReactComponent as ClockWise } from "../assets/icons/clockwise.svg";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
@@ -119,33 +119,28 @@ const StyledTable = styled.div`
 
 export const Table = ({
   opponents,
-  mode,
-  pot,
-  jokers,
-  player
+  player,
+  game
 }: {
-  player: IPlayer;
+  player?: IPlayer;
   opponents: IPlayer[];
-  mode: string;
-  pot: number;
-  jokers: string[]; // Jc
+  game: IGame;
 }) => {
-  const jokerCount = jokers.length;
-  if (jokerCount > 2) jokers = jokers.slice(0, 2);
+  const jokerCount = game.jokers.length;  
   return (
     <StyledTable>
       <div className="tableDealerArea" />
       <div className="tableCenter">
-        <div className="message">Siddhant tipped the dealer G.500</div>
+        <div className="message">{game.message}</div>
         <div className="tableContent">
           <div className="gameMode">
-            <span className="gameValue">{mode.toUpperCase()}</span>
+            <span className="gameValue">{game.mode.toUpperCase()}</span>
             <br />
             GAME
           </div>
           <div className="gamePot">
             <span className="gameValue">
-              <GuptasiIcon /> {pot.toString()}
+              <GuptasiIcon /> {game.pot.toString()}
             </span>
             <br />
             POT
@@ -154,7 +149,7 @@ export const Table = ({
             <div className={"gameValue " + (jokerCount !== 0 ? "cards" : "")}>
               {jokerCount === 0
                 ? "NO"
-                : jokers.map(joker => (
+                : game.jokers.map(joker => (
                     <Card key={joker} number={joker[0]} color={joker[1]} />
                   ))}
             </div>
@@ -165,7 +160,7 @@ export const Table = ({
         <ClockWise className="clockwise right" />
       </div>
       <Dealer />
-      <MainPlayer {...player} />
+      {player && <MainPlayer {...player} />}
       {opponents.map((opponent, index) => (
         <Opponent
           key={opponent.uid}

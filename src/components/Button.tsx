@@ -6,6 +6,7 @@ import { setUserOnlineStatusFalse } from "../helper/firestore";
 import UserIcon from "../assets/icons/user.svg";
 import InfoIcon from "../assets/icons/info.svg";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
+import { IPlayer } from "../helper/typesDefs";
 
 const StyleButton = styled.div`
   padding: ${getDimInREM(6)};
@@ -74,14 +75,14 @@ const StyledGameButton = styled(StyleButton)`
   }
 `;
 
-const PlayButton = () => {
+const PlayButton = ({ isBlind }: { isBlind: boolean }) => {
   const style: React.CSSProperties = {
     color: "#1b6700",
     width: getDimInREM(120)
   };
   return (
     <StyledGameButton style={style}>
-      CHAAL <GuptasiIcon /> 200
+      {isBlind ? "BLIND" : "CHAAL"} <GuptasiIcon /> 200
     </StyledGameButton>
   );
 };
@@ -100,7 +101,7 @@ const RaiseButton = () => {
   );
 };
 
-const GetMoreButton = () => {
+export const GetMoreButton = () => {
   const style: React.CSSProperties = { color: "#CCA700" };
   return (
     <StyledGameButton style={style}>
@@ -112,6 +113,21 @@ const GetMoreButton = () => {
 const SideShowButton = () => {
   const style: React.CSSProperties = { color: "#3B0067" };
   return <StyledGameButton style={style}>SIDE SHOW</StyledGameButton>;
+};
+
+export const SimpleButton = ({
+  text,
+  onClick
+}: {
+  text: string;
+  onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+}) => {
+  const style: React.CSSProperties = { color: "#000" };
+  return (
+    <StyledGameButton style={style} onClick={onClick}>
+      {text}
+    </StyledGameButton>
+  );
 };
 
 export const SeeCardsButton = ({
@@ -138,14 +154,24 @@ const StyledGameButtonGroup = styled.div`
   grid-gap: 1rem;
 `;
 
-export const GameButtonGroup = () => {
+export const GameButtonGroup = ({
+  player,
+  isPlaying
+}: {
+  player?: IPlayer;
+  isPlaying: boolean;
+}) => {
   return (
     <StyledGameButtonGroup>
       <GetMoreButton />
-      <PackButton />
-      <PlayButton />
-      <RaiseButton />
-      <SideShowButton />
+      {player && isPlaying && (
+        <>
+          <PackButton />
+          <PlayButton isBlind={player.isBlind ? true : false} />
+          <RaiseButton />
+          <SideShowButton />
+        </>
+      )}
     </StyledGameButtonGroup>
   );
 };

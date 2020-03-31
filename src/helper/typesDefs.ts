@@ -2,21 +2,24 @@
 
 export interface User {
   uid: string;
+  email: string;
   isAdmin: boolean;
   displayName: string;
-  email: string;
   photoURL: string;
   gamesPlayed: number;
+  online: boolean;
+  position: number;
   wallet: {
     bought: number;
-    earned: number;
+    won: number;
+    spent: number;
   };
-  position: number;
 }
 
 export interface IPlayer extends User {
-  status?: "default" | "dealer";
+  status?: "default" | "dealer" | "blind";
   cards?: string[];
+  isBlind?: boolean;
 }
 
 export type Color = "s" | "h" | "c" | "d" | string;
@@ -26,8 +29,9 @@ export interface ICard {
   isHidden?: boolean;
 }
 
-type GameMode = "normal" | "joker" | "jokers";
 type GameActionType =
+  | "create"
+  | "start"
   | "join"
   | "boot"
   | "pack"
@@ -58,12 +62,14 @@ export interface IGameAction {
 }
 
 export interface IGame {
+  uid: string;
   isActive: boolean;
+  isStarted: boolean;
   pot: number;
-  mode: GameMode;
+  mode: "normal" | "joker" | "jokers" | "lowest" | "two" | "four";
   jokers: string[];
   message: string;
-  startsWith: IPlayer;
+  startsWith?: IPlayer;
   players: IPlayer[];
   actions: IGameAction[];
   winners: IPlayer[];

@@ -4,13 +4,16 @@ import "./index.css";
 import App from "./App";
 import "./firebase";
 import { UserProvider } from "./context/User";
+import { CurrentGameProvider } from "./context/CurrentGame";
 import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
   <React.StrictMode>
-    <UserProvider>
-      <App />
-    </UserProvider>
+    <CurrentGameProvider>
+      <UserProvider>
+        <App />
+      </UserProvider>
+    </CurrentGameProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

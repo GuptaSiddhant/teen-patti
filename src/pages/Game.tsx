@@ -1,21 +1,21 @@
 import * as React from "react";
-
-// import { IPlayer } from "../helper/typesDefs";
-import { useAuthPlayer, useGetOnlineUsers } from "../helper/firestore";
-
+import { useAuthPlayer } from "../helper/firestore";
 import { Table } from "../components/Table";
-import { IconButton, GameButtonGroup } from "../components/Button";
-import { IPlayer, User } from "../helper/typesDefs";
+import {
+  IconButton,
+  GameButtonGroup,  
+} from "../components/Button";
+import { IPlayer, User, IGame } from "../helper/typesDefs";
 
 const useOpponents = (
   allUsers: User[],
   player: IPlayer | undefined
-): IPlayer[] => {  
-  const [allPlayers, setAllPlayers] = React.useState<IPlayer[]>([]);
+): IPlayer[] => {
+  const [opponents, setOpponents] = React.useState<IPlayer[]>([]);
   React.useEffect(() => {
     if (player) {
       const playerPosition = player.position;
-      setAllPlayers(
+      setOpponents(
         allUsers
           .filter(user => user.uid !== player.uid)
           .map(user => ({
@@ -26,30 +26,46 @@ const useOpponents = (
                 : user.position - playerPosition + 9
           }))
       );
-    } else setAllPlayers(allUsers);
+    } else setOpponents(allUsers);
   }, [allUsers, player]);
-  return allPlayers;
+  return opponents;
 };
 
-export const Game = () => {
+const useMainPlayer = (
+  allUsers: User[],
+  player: IPlayer | undefined
+): IPlayer | undefined => {
+  const [mainPlayer, setMainPlayer] = React.useState<IPlayer | undefined>();
+  React.useEffect(() => {
+    if (player) {
+      setMainPlayer(allUsers.find(user => user.uid === player.uid));
+    } else setMainPlayer(undefined);
+  }, [allUsers, player]);
+  return mainPlayer;
+};
+
+/**
+ * 
+ * @todo After game finishes, update all user documents with new wallet
+ */
+export const Game = ({ game }: { game: IGame }) => {
   const player = useAuthPlayer();
-  const allUsers = useGetOnlineUsers();
-  const opponents = useOpponents(allUsers, player);
-  console.count('render game')
+  const opponents = useOpponents(game.players, player);
+  const mainPlayer = useMainPlayer(game.players, player);
   if (player) {
-    player.cards = ["As", "Kc", "5d"];
+    const isPlaying = game.players.some(
+      gamePlayer => gamePlayer.uid === mainPlayer?.uid
+    );
     return (
       <div style={{ position: "relative" }}>
         <IconButton type="info" />
         <IconButton type="profile" />
         <Table
-          player={player}
+          player={isPlaying ? mainPlayer : undefined}
           opponents={opponents}
-          pot={4000}
-          mode="Jokers"
-          jokers={["9S", "5H"]}
+          game={game}
         />
-        <GameButtonGroup />
+        <GameButtonGroup player={mainPlayer} isPlaying={isPlaying} />
       </div>
     );
   } else return null;

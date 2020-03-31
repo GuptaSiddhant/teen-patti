@@ -5,6 +5,8 @@ import { getDimInREM } from "../helper/utilities";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
 import { Card } from "./Card";
 import { SeeCardsButton } from "./Button";
+import useCurrentGame from "../context/CurrentGame";
+import { setPlayerBlindFalse } from "../helper/firestore";
 
 const playerComponentWidth = getDimInREM(80);
 
@@ -12,6 +14,8 @@ const getPlayerStatusBgColor = (status: IPlayer["status"] = "default") => {
   switch (status) {
     case "dealer":
       return "#B3248F";
+    case "blind":
+      return "#000000";
     default:
       return "#CCA700";
   }
@@ -52,6 +56,7 @@ const StyledPlayerOpponent = styled.div<IPlayer>`
     color: #2A2933;
     align-items: center;
   }
+  
   .playerStatus {
     position: absolute;
     bottom: 0;
@@ -114,8 +119,31 @@ const getTopLeftPosition = (pos: number) => {
     case 8:
       return [getDimInREM(150), getDimInREM(340)];
     default:
-      return [getDimInREM(80), getDimInREM(80)];
+      return ["100vh", "100vw"];
   }
+};
+
+const usePlayerStatus = (player: IPlayer): [IPlayer["status"], any] => {
+  let playerStatus: IPlayer["status"] = player.status || "default";
+  if (player.isBlind) playerStatus = "blind";
+
+  const totalWallet =
+    player.wallet.bought + player.wallet.won + player.wallet.spent;
+
+  let statusContent = null;
+  switch (playerStatus) {
+    case "blind":
+      statusContent = "BLIND";
+      break;
+    default:
+      statusContent = (
+        <>
+          <GuptasiIcon /> {totalWallet}
+        </>
+      );
+      break;
+  }
+  return [playerStatus, statusContent];
 };
 
 export const Opponent = ({
@@ -125,20 +153,18 @@ export const Opponent = ({
   player: IPlayer;
   position: number;
 }) => {
+  const [status, statusContent] = usePlayerStatus(player);
+
   const positionStyle: React.CSSProperties = {
     position: "absolute",
     top: getTopLeftPosition(position)[0],
     left: getTopLeftPosition(position)[1]
   };
 
-  const totalWallet = player.wallet.bought + player.wallet.earned;
-
   return (
     <div style={positionStyle}>
-      <StyledPlayerOpponent {...player}>
-        <div className="playerStatus">
-          <GuptasiIcon /> {totalWallet}
-        </div>
+      <StyledPlayerOpponent {...player} status={status}>
+        <div className="playerStatus">{statusContent}</div>
         <div className="playerName">{player.displayName.split(" ")[0]}</div>
       </StyledPlayerOpponent>
     </div>
@@ -169,37 +195,44 @@ export const Dealer = () => {
 };
 
 export const MainPlayer = (player: IPlayer) => {
-  const [isSeen, setSeen] = React.useState(false);
-  const positionStyle: React.CSSProperties = {
-    position: "absolute",
-    top: getDimInREM(150),
-    left: getDimInREM(200)
-  };
-  const totalWallet = player.wallet.bought + player.wallet.earned;
-  return (
-    <div style={positionStyle}>
-      <StyledPlayerOpponent {...player} photoURL="">
-        <div className="cards">
-          {player.cards?.map(card => (
-            <Card
-              key={card}
-              number={card[0]}
-              color={card[1]}
-              isHidden={!isSeen}
-            />
-          ))}
+  const currentGame = useCurrentGame();
 
-          {!isSeen && (
-            <div className="seeButton">
-              <SeeCardsButton onClick={() => setSeen(prev => !prev)} />
-            </div>
-          )}
-        </div>
-        <div className="playerStatus">
-          <GuptasiIcon /> {totalWallet}
-        </div>
-        <div className="playerName">YOU</div>
-      </StyledPlayerOpponent>
-    </div>
-  );
+  if (currentGame) {
+    const positionStyle: React.CSSProperties = {
+      position: "absolute",
+      top: getDimInREM(150),
+      left: getDimInREM(200)
+    };
+    const totalWallet =
+      player.wallet.bought + player.wallet.won + player.wallet.spent;
+    return (
+      <div style={positionStyle}>
+        <StyledPlayerOpponent {...player} photoURL="">
+          <div className="cards">
+            {player.cards?.map(card => (
+              <Card
+                key={card}
+                number={card[0]}
+                color={card[1]}
+                isHidden={player.isBlind}
+              />
+            ))}
+
+            {player.isBlind && (
+              <div className="seeButton">
+                <SeeCardsButton
+                  onClick={() => setPlayerBlindFalse(currentGame, player)}
+                />
+              </div>
+            )}
+          </div>
+          <div className="playerStatus">
+            <GuptasiIcon /> {totalWallet}
+          </div>
+          <div className="playerName">YOU</div>
+        </StyledPlayerOpponent>
+      </div>
+    );
+  }
+  return null;
 };

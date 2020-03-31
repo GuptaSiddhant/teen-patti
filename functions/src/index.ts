@@ -21,9 +21,12 @@ export const addNewUserToFirestore = functions.auth.user().onCreate(user => {
         displayName: "Player",
         photoURL: "",
         gamesPlayed: 0,
+        online: false,
+        position: 0,        
         wallet: {
           bought: 0,
-          earned: 0
+          won: 0,
+          spent: 0
         }
       });
     }
