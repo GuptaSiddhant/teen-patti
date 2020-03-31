@@ -2,7 +2,7 @@ import React from "react";
 import { useAuthUser } from "../context/User";
 import { firestore } from "../firebase";
 import { User, IPlayer, IGame } from "./typesDefs";
-import { mergePlayers, getTotalWallet } from "./utilities";
+import { mergePlayers, getTotalWallet, GameModeType } from "./utilities";
 
 export const useGetAllUserDocuments = () => {
   const [users, setUsers] = React.useState<User[]>([]);
@@ -69,11 +69,26 @@ export const createNewGame = (player: IPlayer) => {
     .set(newGame);
 };
 
-export const setSelectedGameMode = async (gameId: string, modeId: string) => {
+export const setSelectedGameMode = async (
+  game: IGame,
+  modeId: GameModeType
+) => {
+  const jokers: string[] = [];
+  if (modeId === "joker") jokers.push("9c");
+  if (modeId === "jokers") {
+    jokers.push("8d");
+    jokers.push("Qs");
+  }
+
+  const newPlayers = game.players.map(player => ({
+    ...player,
+    cards: ["2c", "5d", "Kh"]
+  }));
+
   try {
     await firestore
-      .doc(`games/${gameId}`)
-      .update({ mode: modeId, isStarted: true });
+      .doc(`games/${game.uid}`)
+      .update({ mode: modeId, isStarted: true, jokers, players: newPlayers });
   } catch (error) {
     console.error("Error setting user online status: true", error);
   }
@@ -151,10 +166,10 @@ export const setUserOnlineStatusFalse = async (uid: string) => {
 };
 
 export const setPlayerBlindFalse = async (game: IGame, player: IPlayer) => {
-  const newPlayers = game.players.map(gamePlayer => {
-    if (gamePlayer.uid === player.uid) return { ...player, isBlind: false };
-    else return player;
-  });
+  const newPlayers = game.players.map(gamePlayer => ({
+    ...gamePlayer,
+    isBlind: gamePlayer.uid === player.uid ? false : gamePlayer.isBlind
+  }));
   try {
     await firestore.doc(`games/${game.uid}`).update({ players: newPlayers });
   } catch (error) {

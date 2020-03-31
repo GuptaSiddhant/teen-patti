@@ -10,7 +10,12 @@ import {
 import useCurrentGame from "../context/CurrentGame";
 import { IconButton, SimpleButton, GetMoreButton } from "../components/Button";
 import { IGame } from "../helper/typesDefs";
-import { getDimInREM, gameModes, getTotalWallet } from "../helper/utilities";
+import {
+  getDimInREM,
+  gameModes,
+  GameModeType,
+  getTotalWallet
+} from "../helper/utilities";
 
 const StyledWelcomeCard = styled.div`
   position: fixed;
@@ -195,13 +200,16 @@ export const Lobby = () => {
                       key={mode[0]}
                       text={mode[1]}
                       onClick={() =>
-                        setSelectedGameMode(currentGame.uid, mode[0])
+                        setSelectedGameMode(
+                          currentGame,
+                          mode[0] as GameModeType
+                        )
                       }
                     />
                   ))}
                 </div>
               </div>
-              <div style={{ position: "absolute", bottom: '-3rem' }}>
+              <div style={{ position: "absolute", bottom: "-3rem" }}>
                 <GetMoreButton />
               </div>
             </>
