@@ -22,7 +22,7 @@ export const addNewUserToFirestore = functions.auth.user().onCreate(user => {
         photoURL: "",
         gamesPlayed: 0,
         online: false,
-        position: 0,        
+        position: 0,
         wallet: {
           bought: 0,
           won: 0,
@@ -33,29 +33,21 @@ export const addNewUserToFirestore = functions.auth.user().onCreate(user => {
   });
 });
 
-// export const startNewGame = functions.firestore
-//   .document("games/{gameId}")
-//   .onUpdate(change => {
-//     const newValue = change.after.data();
-//     const prevValue = change.before.data();
-//     if (prevValue && newValue) {
-//       if (!newValue.isActive && prevValue.isActive) {
-//         const winners = prevValue.winners;
-//         firestore
-//           .collection("games")
-//           .doc()
-//           .set({
-//             isActive: true,
-//             pot: 0,
-//             mode: "normal",
-//             jokers: [],
-//             message: "",
-//             players: [],
-//             actions: [],
-//             winner: [],
-//             startsWith: winners[0]
-//           });
-//       }
-//     }
-//     return null;
-//   });
+export const updateUserWhenGameEnds = functions.firestore
+  .document("games/{gameId}")
+  .onUpdate(change => {
+    const newValue = change.after.data();
+    const prevValue = change.before.data();
+    if (prevValue && newValue) {
+      if (!newValue.isActive && prevValue.isActive) {
+        let batch = firestore.batch();
+        const players = newValue.players;
+        players.forEach((player: any) => {
+          const userRef = firestore.collection("users").doc(player.uid);
+          batch.update(userRef, { wallet: player.wallet });
+        });
+        batch.commit().then(val => console.log("Batch write", val));
+      }
+    }
+    return null;
+  });

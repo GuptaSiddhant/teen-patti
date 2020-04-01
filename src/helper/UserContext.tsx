@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { auth } from "../firebase";
+import { auth } from "../services/firebase";
 
 const UserContext = createContext<firebase.User | null>(null);
 
@@ -9,6 +9,7 @@ export const UserProvider: React.FC = ({ children }) => {
     auth.onAuthStateChanged(userAuth => {
       setUser(userAuth);
     });
+    return () => undefined;
   }, []);
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 };

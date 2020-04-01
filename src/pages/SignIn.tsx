@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { auth } from "../firebase";
+import { auth } from "../services/firebase";
 import logo from "../assets/images/logo.png";
 
 const StyledPage = styled.div`
@@ -94,10 +94,11 @@ const SignIn = () => {
           e.stopPropagation();
           if (email === "") setError("Email is required");
           else if (password === "") setError("Password is required");
-          else auth.signInWithEmailAndPassword(email, password).then(
-            userCred => userCred,
-            errorReason => setError(errorReason.message)
-          );
+          else
+            auth.signInWithEmailAndPassword(email, password).then(
+              userCred => userCred,
+              errorReason => setError(errorReason.message)
+            );
         }}
       >
         <input
@@ -122,7 +123,10 @@ const SignIn = () => {
             setError("");
             if (email === "") setError("Email is required to reset password");
             else
-              auth.sendPasswordResetEmail(email).then(() => setResetMail(true), (errorReason) => setError(errorReason.message));
+              auth.sendPasswordResetEmail(email).then(
+                () => setResetMail(true),
+                errorReason => setError(errorReason.message)
+              );
           }}
         >
           {resetMail ? "Reset mail sent" : "Reset password"}

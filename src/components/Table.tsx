@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "@emotion/styled";
 import { IPlayer, IGame } from "../helper/typesDefs";
-import { getDimInREM } from "../helper/utilities";
+import { getDimInREM, gameModes } from "../helper/utilities";
 import { ReactComponent as ClockWise } from "../assets/icons/clockwise.svg";
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
 
@@ -31,6 +31,7 @@ const StyledTable = styled.div`
     width: 8rem;
     clip-path: polygon(0 0, 20% 100%, 80% 100%, 100% 0);
     background: #fff;
+    top: -0.05rem;
     left: 11rem;
   }
 
@@ -126,7 +127,7 @@ export const Table = ({
   opponents: IPlayer[];
   game: IGame;
 }) => {
-  const jokerCount = game.jokers.length;  
+  const jokerCount = game.jokers.length;
   return (
     <StyledTable>
       <div className="tableDealerArea" />
@@ -134,7 +135,9 @@ export const Table = ({
         <div className="message">{game.message}</div>
         <div className="tableContent">
           <div className="gameMode">
-            <span className="gameValue">{game.mode.toUpperCase()}</span>
+            <span className="gameValue">
+              {gameModes[game.mode].toUpperCase()}
+            </span>
             <br />
             GAME
           </div>

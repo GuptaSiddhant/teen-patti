@@ -1,7 +1,7 @@
 import React from "react";
-import useAuthUser from "./context/User";
-import useCurrentGame from "./context/CurrentGame";
-import { setUserOnlineStatusTrue } from "./helper/firestore";
+import useAuthUser from "./helper/UserContext";
+import useCurrentGame from "./helper/CurrentGameContext";
+import { setUserOnlineStatusTrue } from "./services";
 import Game from "./pages/Game";
 import SignIn from "./pages/SignIn";
 import Lobby from "./pages/Lobby";

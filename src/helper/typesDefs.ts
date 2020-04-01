@@ -1,4 +1,5 @@
 // import * as firebase from "firebase/app";
+import { gameModes } from "./utilities";
 
 export interface User {
   uid: string;
@@ -20,6 +21,7 @@ export interface IPlayer extends User {
   status?: "default" | "dealer" | "blind";
   cards?: string[];
   isBlind?: boolean;
+  isPacked?: boolean;
 }
 
 export type Color = "s" | "h" | "c" | "d" | string;
@@ -45,8 +47,7 @@ type GameActionType =
   | "show"
   | "tip"
   | "gift"
-  | "buy"
-  | "standup";
+  | "end";
 
 export interface IGameAction {
   type: GameActionType;
@@ -66,6 +67,7 @@ export interface IGame {
   isActive: boolean;
   isStarted: boolean;
   pot: number;
+  currentChaal: number;
   mode: "normal" | "joker" | "jokers" | "lowest" | "two" | "four";
   jokers: string[];
   message: string;
@@ -73,4 +75,13 @@ export interface IGame {
   players: IPlayer[];
   actions: IGameAction[];
   winners: IPlayer[];
+}
+
+export type GameModeType = keyof typeof gameModes;
+
+export interface GuptasiRequest {
+  amount: number;
+  approved: boolean;
+  reviewed: boolean;
+  user: IPlayer;
 }

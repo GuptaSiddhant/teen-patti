@@ -6,16 +6,16 @@ import {
   createNewGame,
   setSelectedGameMode,
   joinTheGame
-} from "../helper/firestore";
-import useCurrentGame from "../context/CurrentGame";
-import { IconButton, SimpleButton, GetMoreButton } from "../components/Button";
-import { IGame } from "../helper/typesDefs";
+} from "../services";
+import useCurrentGame from "../helper/CurrentGameContext";
+import { IconButton, SimpleButton } from "../components/Buttons";
+import { IGame, IPlayer } from "../helper/typesDefs";
 import {
   getDimInREM,
   gameModes,
   GameModeType,
   getTotalWallet
-} from "../helper/utilities";
+} from "../helper";
 
 const StyledWelcomeCard = styled.div`
   position: fixed;
@@ -119,44 +119,120 @@ const StyledLobby = styled(StyledWelcomeCard)<IGame>`
   }
 `;
 
+const NoGameLobby = (player: IPlayer) => {
+  const isAdmin = player.isAdmin;
+  return (
+    <div style={{ position: "relative" }}>
+      <IconButton type="info" />
+      <IconButton type="profile" />
+      <IconButton type="refresh" />
+      <IconButton type="guptasi" />
+      <StyledWelcomeCard>
+        Welcome to
+        <div className="logo">
+          <img alt="G9 Teen Patti" src={logo} />
+          <div>
+            <span>G9</span>
+            <br />
+            Teen Patti
+          </div>
+        </div>
+        {isAdmin ? (
+          <button onClick={() => createNewGame(player)}>Create New Game</button>
+        ) : (
+          <span>Request your game host to create a game.</span>
+        )}
+      </StyledWelcomeCard>
+    </div>
+  );
+};
+
+const JoinGameLobby = ({
+  currentGame,
+  player
+}: {
+  currentGame: IGame;
+  player: IPlayer;
+}) => {
+  const isAdmin = player.isAdmin;
+  const joinedPlayers = currentGame.players;
+  const isGameJoined = currentGame.players.some(
+    joinedPlayer => joinedPlayer.uid === player.uid
+  );
+  const enoughMoneyToBoot = getTotalWallet(player) > 100;
+  return (
+    <div style={{ position: "relative" }}>
+      <IconButton type="info" />
+      <IconButton type="profile" />
+      <IconButton type="refresh" />
+      <StyledLobby {...currentGame}>
+        A new game is created and these players have joined (
+        {joinedPlayers.length}).
+        <div className="onlinePlayers">
+          {joinedPlayers.length > 0
+            ? joinedPlayers.map(player => (
+                <div
+                  key={player.uid}
+                  className="player"
+                  style={{ backgroundImage: `url(${player.photoURL})` }}
+                >
+                  {player.displayName}
+                </div>
+              ))
+            : "No players have joined yet"}
+        </div>
+        {isAdmin && joinedPlayers.length > 1 ? (
+          <div>
+            Choose a game Mode to start the game.
+            <div className="gameModes">
+              {Object.entries(gameModes).map(mode => (
+                <SimpleButton
+                  key={mode[0]}
+                  text={mode[1]}
+                  onClick={() =>
+                    setSelectedGameMode(currentGame, mode[0] as GameModeType)
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        ) : enoughMoneyToBoot ? (
+          <div>
+            Click the join button to join the game.
+            <div className="joinGame">
+              {isGameJoined ? (
+                "Game joined"
+              ) : (
+                <SimpleButton
+                  text={"Join the game"}
+                  onClick={() => joinTheGame(currentGame, player)}
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div>
+            You don't have enough Guptasi to play. Buy some by clicking the
+            button in top left "G".
+          </div>
+        )}
+      </StyledLobby>
+    </div>
+  );
+};
+
+/**
+ * Landing Page till game doesn't start
+ */
 export const Lobby = () => {
   const player = useAuthPlayer();
   const currentGame = useCurrentGame();
-  //   const onlineUsers = useGetOnlineUsers();
-  console.log("render lobby", currentGame);
   if (player) {
-    const isAdmin = player.isAdmin;
-
     /** If no currentGame,
      * show admin option to create one
      * show user option to request admin / wait for admin
      */
-    if (!currentGame) {
-      return (
-        <div style={{ position: "relative" }}>
-          <IconButton type="info" />
-          <IconButton type="profile" />
-          <StyledWelcomeCard>
-            Welcome to
-            <div className="logo">
-              <img alt="G9 Teen Patti" src={logo} />
-              <div>
-                <span>G9</span>
-                <br />
-                Teen Patti
-              </div>
-            </div>
-            {isAdmin ? (
-              <button onClick={() => createNewGame(player)}>
-                Create New Game
-              </button>
-            ) : (
-              <span>Request your game host to create a game.</span>
-            )}
-          </StyledWelcomeCard>
-        </div>
-      );
-    }
+    if (!currentGame) return <NoGameLobby {...player} />;
 
     /**
      * If currentGame && is not started,
@@ -164,81 +240,11 @@ export const Lobby = () => {
      * show users option to join game and which mode admin has selected
      * show both the current joined users
      */
-    const joinedPlayers = currentGame.players;
-    const isGameJoined = currentGame.players.some(
-      joinedPlayer => joinedPlayer.uid === player.uid
-    );
-    const enoughMoneyToBoot = getTotalWallet(player) > 100;
+    return <JoinGameLobby player={player} currentGame={currentGame} />;
 
-    return (
-      <div style={{ position: "relative" }}>
-        <IconButton type="info" />
-        <IconButton type="profile" />
-        <StyledLobby {...currentGame}>
-          A new game is created and these players have joined (
-          {joinedPlayers.length}).
-          <div className="onlinePlayers">
-            {joinedPlayers.length > 0
-              ? joinedPlayers.map(player => (
-                  <div
-                    key={player.uid}
-                    className="player"
-                    style={{ backgroundImage: `url(${player.photoURL})` }}
-                  >
-                    {player.displayName}
-                  </div>
-                ))
-              : "No players have joined yet"}
-          </div>
-          {isAdmin ? (
-            <>
-              <div>
-                Choose a game Mode to start the game.
-                <div className="gameModes">
-                  {Object.entries(gameModes).map(mode => (
-                    <SimpleButton
-                      key={mode[0]}
-                      text={mode[1]}
-                      onClick={() =>
-                        setSelectedGameMode(
-                          currentGame,
-                          mode[0] as GameModeType
-                        )
-                      }
-                    />
-                  ))}
-                </div>
-              </div>
-              <div style={{ position: "absolute", bottom: "-3rem" }}>
-                <GetMoreButton />
-              </div>
-            </>
-          ) : enoughMoneyToBoot ? (
-            <div>
-              Click the join button to join the game.
-              <div className="joinGame">
-                {isGameJoined ? (
-                  "Game joined"
-                ) : (
-                  <SimpleButton
-                    text={"Join the game"}
-                    onClick={() => joinTheGame(currentGame, player)}
-                  />
-                )}
-              </div>
-            </div>
-          ) : (
-            <div>
-              You don't have enough Guptasi to play. Buy some by clicking the
-              button.
-              <div className="joinGame">
-                <GetMoreButton />
-              </div>
-            </div>
-          )}
-        </StyledLobby>
-      </div>
-    );
+    /**
+     * No player, return null
+     */
   } else return null;
 };
 

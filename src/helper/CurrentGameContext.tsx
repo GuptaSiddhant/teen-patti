@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { firestore } from "../firebase";
-import { IGame } from "../helper/typesDefs";
+import { firestore } from "../services/firebase";
+import { IGame } from "./typesDefs";
 
 const CurrentGameContext = createContext<IGame | undefined>(undefined);
 

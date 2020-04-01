@@ -1,10 +1,10 @@
 import * as React from "react";
-import { useAuthPlayer } from "../helper/firestore";
+import { useAuthPlayer } from "../services";
 import { Table } from "../components/Table";
 import {
   IconButton,
   GameButtonGroup,  
-} from "../components/Button";
+} from "../components/Buttons";
 import { IPlayer, User, IGame } from "../helper/typesDefs";
 
 const useOpponents = (
@@ -60,12 +60,14 @@ export const Game = ({ game }: { game: IGame }) => {
       <div style={{ position: "relative" }}>
         <IconButton type="info" />
         <IconButton type="profile" />
+        <IconButton type="refresh" />
+        <IconButton type="guptasi" />
         <Table
           player={isPlaying ? mainPlayer : undefined}
           opponents={opponents}
           game={game}
         />
-        <GameButtonGroup player={mainPlayer} isPlaying={isPlaying} />
+        <GameButtonGroup player={mainPlayer} isPlaying={isPlaying} game={game} />
       </div>
     );
   } else return null;

@@ -1,12 +1,19 @@
 import * as React from "react";
 import styled from "@emotion/styled";
-import { IPlayer } from "../helper/typesDefs";
-import { getDimInREM } from "../helper/utilities";
+
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
+import { setPlayerBlindFalse } from "../services";
+import {
+  getDimInREM,
+  getTotalWallet,
+  useCurrentGame,
+  IPlayer,
+  IGame
+} from "../helper";
+import * as solver from "../helper/solver";
+
 import { Card } from "./Card";
-import { SeeCardsButton } from "./Button";
-import useCurrentGame from "../context/CurrentGame";
-import { setPlayerBlindFalse } from "../helper/firestore";
+import { SeeCardsButton } from "./Buttons";
 
 const playerComponentWidth = getDimInREM(80);
 
@@ -45,7 +52,7 @@ const StyledPlayerOpponent = styled.div<IPlayer>`
     left: -0.125rem;
     right: -0.125rem;
     height: 1rem;
-    padding-top: 0.1rem;
+    padding-top: 0.15rem;
     background: #fff;
     border-radius: 0.125rem;
     box-shadow: 0 0.25rem 0.5rem 0 #0004;
@@ -59,10 +66,10 @@ const StyledPlayerOpponent = styled.div<IPlayer>`
   
   .playerStatus {
     position: absolute;
-    bottom: 0;
+    bottom: -0.25rem;
     left: 0;
     right: 0;
-    height: 1rem;
+    height: 1.25rem;
     padding-top: 0.15rem;
 
     background: ${props => getPlayerStatusBgColor(props.status)};
@@ -73,13 +80,13 @@ const StyledPlayerOpponent = styled.div<IPlayer>`
     /* clip-path: path('M36,82 L116,82 L111.515155,97.1363533 C111.011901,98.8348325 109.451429,100 107.679962,100 L44.3200379,100 C42.548571,100 40.9880985,98.8348325 40.4848454,97.1363533 L36,82 L36,82 Z'); */
     text-align: center;
     font-weight: bold;
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: #fff;
     text-align: center;
 
     svg {
-      height: 0.5rem;
-      width: 0.5rem;
+      height: 0.75rem;
+      width: 0.75rem;
     }
   }
 
@@ -127,8 +134,7 @@ const usePlayerStatus = (player: IPlayer): [IPlayer["status"], any] => {
   let playerStatus: IPlayer["status"] = player.status || "default";
   if (player.isBlind) playerStatus = "blind";
 
-  const totalWallet =
-    player.wallet.bought + player.wallet.won + player.wallet.spent;
+  const totalWallet = getTotalWallet(player);
 
   let statusContent = null;
   switch (playerStatus) {
@@ -187,11 +193,36 @@ export const Dealer = () => {
   return (
     <div style={positionStyle}>
       <StyledPlayerOpponent {...dealer}>
-        <div className="playerStatus">Tip the dealer</div>
+        <div className="playerStatus">
+          Tip <GuptasiIcon /> 50
+        </div>
         <div className="playerName">{dealer.displayName.split(" ")[0]}</div>
       </StyledPlayerOpponent>
     </div>
   );
+};
+
+const solveCardsScore = (game: IGame, player: IPlayer) => {
+  const gameMode = game.mode;
+  const playerCards = game.players.find(
+    gamePlayer => gamePlayer.uid === player.uid
+  )?.cards;
+  const jokers = game.jokers;
+  if (playerCards) {
+    switch (gameMode) {
+      case "normal":
+        return solver.scoreHandsNormal(playerCards);
+      case "two":
+        return solver.scoreHandsTwo(playerCards);
+      case "four":
+        return solver.scoreHandsFour(playerCards);
+      case "lowest":
+        return solver.scoreHandsLowest(playerCards);
+      case "joker":
+      case "jokers":
+        return solver.scoreHandsJokers(playerCards, jokers);
+    }
+  }
 };
 
 export const MainPlayer = (player: IPlayer) => {
@@ -203,8 +234,9 @@ export const MainPlayer = (player: IPlayer) => {
       top: getDimInREM(150),
       left: getDimInREM(200)
     };
-    const totalWallet =
-      player.wallet.bought + player.wallet.won + player.wallet.spent;
+    const totalWallet = getTotalWallet(player);
+    const cardScore = solveCardsScore(currentGame, player);
+    const bestCardScoreName = player.isBlind ? "YOU" : cardScore?.name || "YOU";
     return (
       <div style={positionStyle}>
         <StyledPlayerOpponent {...player} photoURL="">
@@ -229,7 +261,7 @@ export const MainPlayer = (player: IPlayer) => {
           <div className="playerStatus">
             <GuptasiIcon /> {totalWallet}
           </div>
-          <div className="playerName">YOU</div>
+          <div className="playerName">{bestCardScoreName}</div>
         </StyledPlayerOpponent>
       </div>
     );
