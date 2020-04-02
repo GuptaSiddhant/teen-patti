@@ -51,3 +51,61 @@ export const updateUserWhenGameEnds = functions.firestore
     }
     return null;
   });
+
+export const reviewGuptasiRequest = functions.firestore
+  .document(`guptasi/{requestId}`)
+  .onUpdate(change => {
+    const newValue = change.after.data();
+    const prevValue = change.before.data();
+    if (prevValue && newValue) {
+      if (newValue.reviewed && !prevValue.reviewed) {
+        const userId: string = newValue.user.uid;
+        const amount: number = newValue.amount;
+        const approved: boolean = newValue.approved;
+        if (approved) {
+          // Update user doc
+          const userRef = firestore.collection("users").doc(userId);
+          firestore.runTransaction(t => {
+            return t.get(userRef).then(doc => {
+              if (doc.exists) {
+                const newBoughtAmount =
+                  (doc.data()?.wallet.bought || 0) + amount;
+                t.update(userRef, { wallet: { bought: newBoughtAmount } });
+              } else return;
+            });
+          });
+
+          // Update current active game - player
+          const gamesRef = firestore
+            .collection("games")
+            .where("isActive", "==", true);
+          gamesRef.get().then(snapshot => {
+            if (!snapshot.empty) {
+              snapshot.forEach(doc => {
+                const gameId = doc.id;
+                const gameRef = firestore.collection("games").doc(gameId);
+                firestore.runTransaction(t => {
+                  return t.get(gameRef).then(gameDoc => {
+                    const game = gameDoc.data();
+                    const players: any[] = game?.players || [];
+                    const newPlayers = players.map((player: any) => {
+                      if (player.uid === userId) {
+                        const currentBoughtAmount = player.wallet.bought;
+                        const newBoughtAmount = currentBoughtAmount + amount;
+                        const newWallet = {
+                          ...player.wallet,
+                          bought: newBoughtAmount
+                        };
+                        return { ...player, wallet: newWallet };
+                      } else return player;
+                    });
+                    t.update(gameRef, { players: newPlayers });
+                  });
+                });
+              });
+            } else return;
+          });
+        }
+      }
+    }
+  });
