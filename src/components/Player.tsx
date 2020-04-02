@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "@emotion/styled";
 
 import { ReactComponent as GuptasiIcon } from "../assets/icons/guptasi.svg";
-import { setPlayerBlindFalse } from "../services";
+import { setPlayerBlindFalse, tipTheDealerAsGift } from "../services";
 import {
   getDimInREM,
   getTotalWallet,
@@ -177,29 +177,36 @@ export const Opponent = ({
   );
 };
 
-export const Dealer = () => {
-  const dealer: IPlayer = {
-    displayName: "Dealer",
-    photoURL:
-      "https://firebasestorage.googleapis.com/v0/b/g9teenpatti.appspot.com/o/images%2Fdealer.jpg?alt=media&token=241024d4-915c-4070-87cd-62bda116b48c",
-    status: "dealer"
-  } as IPlayer;
+export const Dealer = (player: IPlayer) => {
+  const currentGame = useCurrentGame();
+  if (currentGame) {
+    const dealer: IPlayer = {
+      displayName: "Dealer",
+      photoURL:
+        "https://firebasestorage.googleapis.com/v0/b/g9teenpatti.appspot.com/o/images%2Fdealer.jpg?alt=media&token=241024d4-915c-4070-87cd-62bda116b48c",
+      status: "dealer"
+    } as IPlayer;
 
-  const positionStyle: React.CSSProperties = {
-    position: "absolute",
-    top: getDimInREM(-60),
-    left: getDimInREM(200)
-  };
-  return (
-    <div style={positionStyle}>
-      <StyledPlayerOpponent {...dealer}>
-        <div className="playerStatus">
-          Tip <GuptasiIcon /> 50
-        </div>
-        <div className="playerName">{dealer.displayName.split(" ")[0]}</div>
-      </StyledPlayerOpponent>
-    </div>
-  );
+    const positionStyle: React.CSSProperties = {
+      position: "absolute",
+      top: getDimInREM(-60),
+      left: getDimInREM(200)
+    };
+    return (
+      <div style={positionStyle}>
+        <StyledPlayerOpponent
+          {...dealer}
+          onClick={() => player && tipTheDealerAsGift(currentGame, player)}
+        >
+          <div className="playerStatus">
+            Tip <GuptasiIcon /> 50
+          </div>
+          <div className="playerName">{dealer.displayName.split(" ")[0]}</div>
+        </StyledPlayerOpponent>
+      </div>
+    );
+  }
+  return null;
 };
 
 const solveCardsScore = (game: IGame, player: IPlayer) => {
@@ -229,42 +236,49 @@ export const MainPlayer = (player: IPlayer) => {
   const currentGame = useCurrentGame();
 
   if (currentGame) {
-    const positionStyle: React.CSSProperties = {
-      position: "absolute",
-      top: getDimInREM(150),
-      left: getDimInREM(200)
-    };
-    const totalWallet = getTotalWallet(player);
-    const cardScore = solveCardsScore(currentGame, player);
-    const bestCardScoreName = player.isBlind ? "YOU" : cardScore?.name || "YOU";
-    return (
-      <div style={positionStyle}>
-        <StyledPlayerOpponent {...player} photoURL="">
-          <div className="cards">
-            {player.cards?.map(card => (
-              <Card
-                key={card}
-                number={card[0]}
-                color={card[1]}
-                isHidden={player.isBlind}
-              />
-            ))}
-
-            {player.isBlind && (
-              <div className="seeButton">
-                <SeeCardsButton
-                  onClick={() => setPlayerBlindFalse(currentGame, player)}
-                />
-              </div>
-            )}
-          </div>
-          <div className="playerStatus">
-            <GuptasiIcon /> {totalWallet}
-          </div>
-          <div className="playerName">{bestCardScoreName}</div>
-        </StyledPlayerOpponent>
-      </div>
+    const mainPlayer = currentGame.players.find(
+      gPlayer => gPlayer.uid === player.uid
     );
+    if (mainPlayer) {
+      const positionStyle: React.CSSProperties = {
+        position: "absolute",
+        top: getDimInREM(150),
+        left: getDimInREM(200)
+      };
+      const totalWallet = getTotalWallet(mainPlayer);
+      const cardScore = solveCardsScore(currentGame, mainPlayer);
+      const bestCardScoreName = mainPlayer.isBlind
+        ? "YOU"
+        : cardScore?.name || "YOU";
+      return (
+        <div style={positionStyle}>
+          <StyledPlayerOpponent {...mainPlayer} photoURL="">
+            <div className="cards">
+              {mainPlayer.cards?.map(card => (
+                <Card
+                  key={card}
+                  number={card[0]}
+                  color={card[1]}
+                  isHidden={mainPlayer.isBlind}
+                />
+              ))}
+
+              {player.isBlind && (
+                <div className="seeButton">
+                  <SeeCardsButton
+                    onClick={() => setPlayerBlindFalse(currentGame, mainPlayer)}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="playerStatus">
+              <GuptasiIcon /> {totalWallet}
+            </div>
+            <div className="playerName">{bestCardScoreName}</div>
+          </StyledPlayerOpponent>
+        </div>
+      );
+    }
   }
   return null;
 };

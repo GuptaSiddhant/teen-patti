@@ -5,6 +5,7 @@ import {
   getShuffledCards
 } from "../../helper/utilities";
 import { firestore } from "../firebase";
+import { tipDealer } from "./users";
 
 export const createNewGame = async (player: IPlayer) => {
   const doesHostHasBootMoney = getTotalWallet(player) > 100;
@@ -141,4 +142,19 @@ export const setPlayerBlindFalse = async (game: IGame, player: IPlayer) => {
   } catch (error) {
     console.error("Error setting player blind: false", error);
   }
+};
+
+export const tipTheDealerAsGift = (game: IGame, player: IPlayer) => {
+  const gamePlayers = game.players;
+  gamePlayers.forEach(gamePlayer => {
+    if (player.uid === gamePlayer.uid) {
+      if (getTotalWallet(gamePlayer) > 50) {
+        tipDealer();
+        const gameRef = firestore.collection("games").doc(game.uid);
+        const wallet = gamePlayer.wallet;
+        wallet.spent += 50;
+        gameRef.update({ wallet });
+      }
+    }
+  });
 };

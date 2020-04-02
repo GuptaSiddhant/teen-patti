@@ -59,21 +59,6 @@ export const useUserDocument = (uid: string) => {
   return user;
 };
 
-// export const getUserDocument = async (
-//   uid: string
-// ): Promise<User | undefined> => {
-//   try {
-//     const userDocument = await firestore.doc(`users/${uid}`).get();
-//     const userInfo = userDocument.data() as User;
-//     return {
-//       ...userInfo,
-//       uid
-//     };
-//   } catch (error) {
-//     console.error("Error fetching user", error);
-//   }
-// };
-
 export const useAuthPlayer = () => {
   const authUser = useAuthUser();
   const user = useUserDocument(authUser?.uid || "");
@@ -114,5 +99,21 @@ export const setUserOnlineStatusFalse = async (uid: string) => {
     await firestore.doc(`users/${uid}`).update({ online: false });
   } catch (error) {
     console.error("Error setting user online status: true", error);
+  }
+};
+
+export const tipDealer = (amount: number = 50) => {
+  const dealerRef = firestore.doc(`users/dealer`);
+  try {
+    firestore.runTransaction(t =>
+      t.get(dealerRef).then(doc => {
+        if (doc.exists) {
+          const newWallet = (doc.data()?.wallet || 0) + amount;
+          t.update(dealerRef, { wallet: newWallet });
+        }
+      })
+    );
+  } catch (error) {
+    console.error("Error tipping dealer", error);
   }
 };

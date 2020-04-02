@@ -1,10 +1,7 @@
 import * as React from "react";
 import { useAuthPlayer } from "../services";
-import { Table } from "../components/Table";
-import {
-  IconButton,
-  GameButtonGroup,  
-} from "../components/Buttons";
+import { Table } from "../components";
+import { IconButton, GameButtonGroup } from "../components/Buttons";
 import { IPlayer, User, IGame } from "../helper/typesDefs";
 
 const useOpponents = (
@@ -45,7 +42,7 @@ const useMainPlayer = (
 };
 
 /**
- * 
+ *
  * @todo After game finishes, update all user documents with new wallet
  */
 export const Game = ({ game }: { game: IGame }) => {
@@ -53,6 +50,7 @@ export const Game = ({ game }: { game: IGame }) => {
   const opponents = useOpponents(game.players, player);
   const mainPlayer = useMainPlayer(game.players, player);
   if (player) {
+    const isAdmin = player.isAdmin;
     const isPlaying = game.players.some(
       gamePlayer => gamePlayer.uid === mainPlayer?.uid
     );
@@ -62,12 +60,17 @@ export const Game = ({ game }: { game: IGame }) => {
         <IconButton type="profile" />
         <IconButton type="refresh" />
         <IconButton type="guptasi" />
+        {isAdmin && <IconButton type="review" />}
         <Table
           player={isPlaying ? mainPlayer : undefined}
           opponents={opponents}
           game={game}
         />
-        <GameButtonGroup player={mainPlayer} isPlaying={isPlaying} game={game} />
+        <GameButtonGroup
+          player={mainPlayer}
+          isPlaying={isPlaying}
+          game={game}
+        />
       </div>
     );
   } else return null;

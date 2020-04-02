@@ -84,4 +84,5 @@ export interface GuptasiRequest {
   approved: boolean;
   reviewed: boolean;
   user: IPlayer;
+  uid: string;
 }

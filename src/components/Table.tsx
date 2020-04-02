@@ -162,8 +162,8 @@ export const Table = ({
         <ClockWise className="clockwise left" />
         <ClockWise className="clockwise right" />
       </div>
-      <Dealer />
       {player && <MainPlayer {...player} />}
+      {player && <Dealer {...player} />}
       {opponents.map((opponent, index) => (
         <Opponent
           key={opponent.uid}

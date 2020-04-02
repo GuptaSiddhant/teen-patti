@@ -68,9 +68,10 @@ export const reviewGuptasiRequest = functions.firestore
           firestore.runTransaction(t => {
             return t.get(userRef).then(doc => {
               if (doc.exists) {
-                const newBoughtAmount =
-                  (doc.data()?.wallet.bought || 0) + amount;
-                t.update(userRef, { wallet: { bought: newBoughtAmount } });
+                const oldWallet = doc.data()?.wallet;
+                const newBoughtAmount = (oldWallet.bought || 0) + amount;
+                const newWallet = { ...oldWallet, bought: newBoughtAmount };
+                t.update(userRef, { wallet: newWallet });
               } else return;
             });
           });

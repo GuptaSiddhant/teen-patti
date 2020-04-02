@@ -127,6 +127,7 @@ const NoGameLobby = (player: IPlayer) => {
       <IconButton type="profile" />
       <IconButton type="refresh" />
       <IconButton type="guptasi" />
+      {isAdmin && <IconButton type="review" />}
       <StyledWelcomeCard>
         Welcome to
         <div className="logo">
@@ -165,6 +166,7 @@ const JoinGameLobby = ({
       <IconButton type="info" />
       <IconButton type="profile" />
       <IconButton type="refresh" />
+      {isAdmin && <IconButton type="review" />}
       <StyledLobby {...currentGame}>
         A new game is created and these players have joined (
         {joinedPlayers.length}).
